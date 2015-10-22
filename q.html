@@ -1,0 +1,188 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width" />
+    <title>Untitled Document</title>
+    <head>
+        <link href="css/question.css" rel="stylesheet" type="text/css">
+        <script language="JavaScript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+        <link rel="stylesheet" href="css/animate.css">
+        <style type="text/css">
+            * {
+                font-family: sans-serif;
+            }
+        </style>
+        <script language="JavaScript" type="text/javascript">
+            function app() {
+                window.CINDERELLAver1.localpage();
+            }
+            function appios() {
+                window.location = "jscall://localpage";
+            }
+            function check() {
+                var nextnow = new Date();
+                if (nextnow.getHours() < 7) {
+                    alert("신데렐라 파티는 오전 7시에 시작합니다.");
+                    var broswerInfo = navigator.userAgent;
+                    if (broswerInfo.indexOf("APP_CINDERELLAver1.1_Android") > -1) {
+                        app();
+                    } else if (broswerInfo.indexOf("iPhone") > -1) {
+                        appios(); //<-- 어플리케이션 웹뷰접속이 아닐경우 접속불가 맥에서는 가능
+                    }
+                    location.href = "/";
+                }
+            }
+
+            var q1 = 0;
+            var q2 = 0;
+            var q3 = 0;
+            $(document).ready(function () {
+
+                //fadeOutRight 효과를 준 부분
+                var animationName = "animated rubberBand"
+                var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend'
+                $('.ol-01>li').click(function () {
+
+                    q1 = $(this).val();
+                    $(this).css('color', 'orange');
+                    $(this).addClass(animationName).one(animationEnd, function () {
+                        $(this).removeClass(animationName);
+                        //페이지 전환
+                        //페이지1를 사라지게 하고, 페이지2가 나오게 함
+                        /* 화면이 깨지지 않고, 화면 전환 효과가 나오게 하면 좋겠다.
+                         * 나는 그냥 jquery로 했는데, 이런 부분이 css로 나와야 보기에 이쁜게 된다.
+                         */
+                        $("#Qut1").fadeOut();
+                        $("#Qut2").show();
+                    });
+                });
+            });
+            $(document).ready(function () {
+                //fadeOutRight 효과를 준 부분
+                var animationName = "animated rubberBand"
+                var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend'
+                $('.ol-02>li').click(function () {
+
+                    q2 = $(this).val();
+                    $(this).css('color', 'orange');
+                    $(this).addClass(animationName).one(animationEnd, function () {
+                        $(this).removeClass(animationName);
+                        //페이지 전환
+                        //페이지1를 사라지게 하고, 페이지2가 나오게 함
+                        /* 화면이 깨지지 않고, 화면 전환 효과가 나오게 하면 좋겠다.
+                         * 나는 그냥 jquery로 했는데, 이런 부분이 css로 나와야 보기에 이쁜게 된다.
+                         */
+                        $("#Qut2").fadeOut();
+                        $("#Qut3").show();
+                    });
+                });
+            });
+            $(document).ready(function () {
+                //fadeOutRight 효과를 준 부분
+                var animationName = "animated rubberBand"
+                var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend'
+                $('.ol-03>li').click(function () {
+
+                    q3 = $(this).val();
+                    $(this).css('color', 'orange');
+                    $(this).addClass(animationName).one(animationEnd, function () {
+                        $(this).removeClass(animationName);
+                        //페이지 전환
+                        //페이지1를 사라지게 하고, 페이지2가 나오게 함
+                        /* 화면이 깨지지 않고, 화면 전환 효과가 나오게 하면 좋겠다.
+                         * 나는 그냥 jquery로 했는데, 이런 부분이 css로 나와야 보기에 이쁜게 된다.
+                         */
+                        var url = "/q_save?q1=" + q1 + "&q2=" + q2 + "&q3=" + q3;
+                        $(location).attr('href', url);//{transition:"slide", reverse: false});
+                    });
+                });
+            });
+        </script>
+    </head>
+    <body onload="check();">
+        <div data-role="page" id="Qut1">
+            <div class="wrap_head">
+                <!--  		<img src="images/main_btn.png" id="main_btn"> -->
+                <div>오늘의 질문</div>
+            </div>
+
+            <div id="d-question">
+                <p class="p-title">Question 01</p>
+                <p class="p-text">
+                    나의 고민?
+                </p>
+                <div id="d-oi-01">
+                    <ol class="ol-01">
+                        <li class="li-top" value="1">
+                            키, 성적표, 불안한 장래 등등
+                        </li>
+                        <li class="li-mid" value="2">
+                            취업, 연애, 군대문제 등등
+                        </li>
+                        <li class="li-mid" value="3">
+                            직장에서의 승진, 결혼, 내집 마련 등등 
+                        </li>
+                        <li class="li-bot" value="4">
+                            노후준비, 자식걱정 등등
+                        </li>                                             
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <div data-role="page" id="Qut2">
+            <div class="wrap_head">
+                <!--  		<img src="images/main_btn.png" id="main_btn"> -->
+                <div id="main_title">오늘의 질문</div>
+            </div>
+            <div id="d-question">
+                <p class="p-title">Question 02</p>
+                <p class="p-text">
+                    사랑이 없는 세상보다 무서운 세상, 사랑이 한쪽에만 있는 세상...^^
+                    짝사랑에 표현한 곡 중엔 이것이 내 맘을 울렸다.   
+                </p>
+                <div id="d-oi-01">
+                    <ol class="ol-02">
+                        <li class="li-top" value="1">
+                            김광석의 "사랑했지만". 
+                        </li>
+                        <li class="li-mid" value="2">
+                            뱅크(Bank)의 "가질 수 없는 너"
+                        </li>
+                        <li class="li-bot" value="3">
+                            바비킴의 "사랑 그놈"
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+
+        <div data-role="page" id="Qut3">
+            <div class="wrap_head">
+                <!--  		<img src="images/main_btn.png" id="main_btn"> -->
+                <div id="main_title">오늘의 질문</div>
+            </div>
+
+            <div id="d-question">
+                <p class="p-title">Question 03</p>
+                <p class="p-text">
+                    내일 내가 죽는다면, 나는 오늘?
+                </p>
+                <div id="d-oi-01">
+                    <ol class="ol-03">
+                        <li class="li-top" value="1">
+                            가는 길은 화끈해야……있는 돈, 없는 돈 다 모아서 밤새도록 달리자!!!
+                        </li>
+                        <li class="li-bot" value="2">
+                            가는 길이 깨끗해야……미뤄두었던 숙제들을 하겠다. 
+                            고마운 사람에겐 감사의 말을…미안한 사람에겐 사과의 말을…
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+
+    </body>
+</html>

@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width" />
+<title>Insert title here</title>
+<link href="css/nickname.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<script language="JavaScript" type="text/javascript">
+function app() {
+    window.CINDERELLAver1.localpage();
+}
+function appios() {
+    window.location = "jscall://localpage";
+}
+function ff() {
+    var broswerInfo = navigator.userAgent;
+    if (broswerInfo.indexOf("APP_CINDERELLAver1.1_Android") > -1)
+    {
+        window.CINDERELLAver1.loading();
+    } else if (broswerInfo.indexOf("iPhone") > -1) {
+        window.location = "jscall://loading";
+    }
+    
+    var frm = document.Form;
+    frm.action = "n_check.html";
+    frm.submit();
+}
+function check() {
+    var nextnow = new Date();
+        if (nextnow.getHours() < 7) {
+            alert("오픈 시간이 아니에요!");
+        var broswerInfo = navigator.userAgent;
+        if (broswerInfo.indexOf("APP_CINDERELLAver1.1_Android") > -1)
+        {
+            app();
+        } else if (broswerInfo.indexOf("iPhone") > -1) {
+            appios();
+        }
+        location.href = "/q.html";
+    }
+}
+</script>
+</head>
+
+
+<body onLoad="check()">
+<!-- header -->
+<div class="wrap_head">
+  <!--<img src="images/main_btn.png" id="main_btn">-->
+  <div>닉네임 설정</div>
+</div>
+
+<img src="images/img_man.png" class="man">
+<!--input-->
+<form id="input-nickname-line" name="Form">
+     <input type="text" name="nick" class="input-nickname" placeholder="닉네임(5글자)" maxlength="5">
+<!--      <img src="images/img_check_off.png" class="img-check-off">    -->
+ </form>
+<!--/input-->
+
+<!--btn-->
+<div id="d-btn-in">
+ <div id="bnt-in">
+  <p class="p-in" onClick="ff()">입장하기</p>
+ </div>
+</div>
+<!--btn-->
+
+</body>
+</html>

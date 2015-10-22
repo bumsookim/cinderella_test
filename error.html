@@ -1,0 +1,151 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+
+    <script language="JavaScript" type="text/javascript">
+function app1()
+{
+	window.CINDERELLAver1.localpage();
+}
+        // 함수 호출시 디바이스의 localpage라는 메소드를 호출
+        // apk 안의 local index.html 로 이동시키는 함수.
+function app1ios() {
+    window.location = "jscall://localpage";
+}
+function app2()
+{
+    window.CINDERELLAver1.exitapp();
+}
+        // 함수 호출시 apk의 exitapp이라는 메소드를 함출
+        // 어플리케이션 종료 함수.
+function app2ios() {
+    window.location = "jscall://exitapp";
+}
+var id; // uuid를 받을 변수
+function origin(oldid){
+	id=oldid;
+}
+        // 이 함수는 현재 안드로이드에서 재시작할때 uuid를 다시 받아오기 위해서 처리함
+        // 웹뷰에서 window.CINDERELLAver1.originalid();로 안드로이드에 요청.
+        // 안드로이드는 다시 웹뷰로 origin(oldid);호출하여 uuid저장
+function restart(){
+	window.CINDERELLAver1.originalid();
+	window.CINDERELLAver1.loading();
+}
+        // 웹뷰에서 안드로이드로 각각 함수를 요청.
+        // originalid()는 uuid 를 가져오고, 다시 웹뷰의 origin 메소드를 호출 하여 uuid전송
+        // loading()은 안드로이드안의 로딩페이지를 호출
+function restartios() {
+    window.location = "jscall://originalid";
+    window.location = "jscall://loading";
+}
+function move(){
+    location.href = "/login?uuid=" + id;
+}
+        // restart 함수 호출된 후 바로 이어서 호출되는 함수.
+        // 안드로이드에서 받은 uuid를 기준으로 q.html로 이동시킴.
+
+
+//앱 종료 함수를 입력 (iOS)
+function ioswebclose() {
+    window.close(); /* the actual closing we want to achieve... */
+    /* makes the focus go back to opener on iPad2, fails silently on iPad3 */
+}
+
+var broswerInfo = navigator.userAgent;
+        // 웹브라우저의 정보.
+var value='';
+        
+var url = unescape(location.href);
+var pm  = url.split('?');
+
+var params   = pm[1].split('&');
+for( var i=0; i<params.length; i++ )
+{
+ 	var param = params[i].split('=');
+	// 	alert(param[0]+' 의 값은 '+param[1]+' 입니다.');
+	_value=param[1];
+	value=param[1];
+}
+if(value==0)
+{
+    if (broswerInfo.indexOf("APP_CINDERELLAver1.1_Android") > -1) {
+        restart();
+    } else  {
+        //restartios();
+        alert("즐거운 시간 되셨어요...또 봐요~~");
+        ioswebclose();
+    }
+}
+else if(value==1)
+{
+	alert('방이 가득찼습니다.');
+	if (broswerInfo.indexOf("APP_CINDERELLAver1.1_Android") > -1) {
+	    restart();
+	} else if (broswerInfo.indexOf("iPhone") > -1) {
+	    ioswebclose();	   
+	}
+}
+else if(value==2)
+{
+	alert('접속정지입니다. 관리자에게 문의하세요');
+	if (broswerInfo.indexOf("APP_CINDERELLAver1.1_Android") > -1) {
+	    app1();
+	} else if (broswerInfo.indexOf("iPhone") > -1) {
+	    ioswebclose();	  
+	}
+}
+else if(value==3)
+{
+	alert('방에서 강퇴 당했습니다.');
+	if (broswerInfo.indexOf("APP_CINDERELLAver1.1_Android") > -1) {
+	    app1();
+	} else if (broswerInfo.indexOf("iPhone") > -1) {
+	    ioswebclose();	    
+	}
+}
+else if(value==4)
+{
+	alert('닉네임중복');
+	if (broswerInfo.indexOf("APP_CINDERELLAver1.1_Android") > -1) {
+	    restart();
+	} else if (broswerInfo.indexOf("iPhone") > -1) {	  
+	    ioswebclose();
+	}
+}
+else if(value==5) {
+	alert('입장권이 훼손 되어 있어요! 재입장해주세요!');
+	if (broswerInfo.indexOf("APP_CINDERELLAver1.1_Android") > -1) {
+	    app1();
+	} else if (broswerInfo.indexOf("iPhone") > -1) {
+	    
+	    ioswebclose();
+	}
+}
+else if (value == 6) {
+    alert('세션이 만료되었습니다. 재입장해주세요.');
+    if (broswerInfo.indexOf("APP_CINDERELLAver1.1_Android") > -1) {        
+        app1();
+    } else if (broswerInfo.indexOf("iPhone") > -1) {
+        ioswebclose();
+    }
+}
+else
+{
+	alert('에러! 코드번호 참조');
+	alert(value);
+}
+setTimeout(function()
+{
+    if (broswerInfo.indexOf("APP_CINDERELLAver1.1_Android") > -1) {
+        move();
+    }
+}, 1500);
+    </script>
+
+</head>
+<body>
+</body>
+</html>

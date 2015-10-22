@@ -1,0 +1,21 @@
+@charset "utf-8";
+
+ body { padding: 0px; margin: 0px; overflow:scroll; background-color:#F7F4F4;}
+/* header */
+ .wrap_head {position:fixed; top:0%; width:100%; color:#fff; font-size:1.1em; font-weight:bold; text-align:center; 
+               padding-top:0.7em; padding-bottom:0.7em; background:#1e88e5; box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.45); z-index:1;}
+	#main_btn {position:absolute; height:40%; left:0.7em; top:0.8em;}
+
+
+#d-question {position:absolute; top:0em; width:100%; padding-bottom:1em; background-color: #FFFFFF; box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.45);}/*상 좌 하 우*/
+	.p-title {margin-top:3.5em; margin-left:3%; font-size:1.5em; font-weight:bold; color:#1E88E5;}
+	.p-text {margin-left:3%; margin-top:-1em; font-size:1.2em; letter-spacing:-0.1em;}
+
+#d-oi-01 {position:absolute; width:100%; margin-top:2em;}
+.ol-01 {background-color:#FFFFFF; border-top: 1px solid #999999; border-bottom: 1px solid #999999;}
+.ol-02 {background-color:#FFFFFF; border-top: 1px solid #999999; border-bottom: 1px solid #999999;}
+.ol-03 {background-color:#FFFFFF; border-top: 1px solid #999999; border-bottom: 1px solid #999999;}
+	.li-top {list-style-type:decimal-leading-zero; font-size:1em; border-bottom: 1px solid #999999; padding-top:0.8em; padding-bottom:0.8em;}
+	.li-mid {list-style-type:decimal-leading-zero; font-size:1em; border-bottom: 1px solid #999999; padding-top:0.8em; padding-bottom:0.8em;}
+	.li-bot {list-style-type:decimal-leading-zero; font-size:1em; padding-top:0.8em; padding-bottom:0.8em;}
+	 li img {position:absolute; right:2%; margin-top:0.2em; width: 1em;}

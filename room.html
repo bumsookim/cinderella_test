@@ -1,0 +1,520 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width" />
+<title>신데렐라 채팅</title>
+<script language="JavaScript" type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<style type="text/css">
+ * { font-family: sans-serif;}
+ body { padding: 0px; margin: 0px;}
+ 
+	/* head 부분 */
+.wrap_main { width:100%; background: #fff;}
+.wrap_head {position:fixed; height:2.5em top:0%; width:100%; color:#fff; font-size:1.1em; font-weight:bold; text-align:center; } 
+.wrap_head {padding-top:0.7em; padding-bottom:0.7em; background:#1e88e5; box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.45); z-index:1;}
+   #main_btn {position:absolute; height:40%; left:0.7em; top:0.8em;}
+    #main_btn2 { position:absolute; height:35%; right:0.7em; top:0.9em;}
+    #main_title { position:absolute; left:50%; margin-left:-2.5em; top:30%; color:#fff; font-size:3.5em}
+    
+	/* body 부분 */
+ .wrap_body { position:absolute; left:0%; top:2.9em; width:100%; height:40em; background:#FFF;}
+   .wrap_body { overflow-y:hidden; margin-bottom: 10em;overflow-y:auto;} 
+  
+   #chat_nick { color:#555; font-size:1em; font-weight: bold; font-family: sans-serif;}
+   #chat_msg { margin-top:-0.6em; background:#eee; padding:0.7em; font-size:1em; border-radius:2em 2em 0em 2em;}
+   #chat_date { position:absolute; right:10%; margin-top:-1.1em; font-size:0.7em; font-family: sans-serif;}
+  
+.wrap_bottom { position:fixed; bottom:0em; width:100%; background:#42a5f5; padding-bottom:0.6em; padding-top:0.6em;}
+  .bottom_box {position:relative; width:90%; left:50%; margin-left:-45%; height:2em;}
+  #input_txt {float:left; width:80%; background-color:#FFFFFF; height:100%; border-radius:20em 0em 0em 20em; overflow:hidden;  outline:none} 
+     #message {border:none; margin-left:0.5em; width:90%; height:100%; font-size:1.1em; background:transparent;}
+  #send_btn {float:right; width:20%; height:100%; font-size:1.1em; font-weight:bold; text-align:center; line-height:1.9em; background:#fb8c00; color:#FFFFFF; border-radius:0em 20em 20em 0em;}
+
+/* menu 부분 */
+.wrap_menu { position:fixed; left:-100%; top:3em; width:100%; height:100em; background:#000; z-index:2; background:rgba(0,0,0,0.7);}
+.wrap_manu { position:fixed; left:120%; top:3em; width:80%; height:100em; background:#fff; z-index:2; }<!--바뀜 -->
+  .menu_top { position: absolute; left:0%; width:100%; background-color:black;}
+  	#menu_header {position:absolute; width:50%;}
+  	#menu_header_text {font-size:1.1em; color:#000; margin-left:1em; }
+  	#menu_exit {position:relative; float:left; left:50%; width:50%;}
+  	#menu_exit_btn {display:table-cell; vertical-align:middle; position:relative; height:1.7em; left:0.5em; padding-top: 0.9em;}
+    #menu_line { position:absolute; top:3.5em; width:100%; height:1em; background-color: #ebebeb; border-top:solid #959595 1px; border-bottom:solid #959595 1px;}
+ 
+  #wrap_menu_user {position: relative; top:3.7em; width:100%; height:10em; background:#fff}
+     .wrap_li { position: relative; left:-1.5em; width:100%; height:3.7em; list-style-type:none; border-bottom:1px solid #c5c5c5;}
+   		.menu_user { position:absolute; left:0em; top:1.2em; font-size:1em; height: 4em; width:100%;} 
+   		#fun_wis {position: absolute; right:30%; height: 3.5em; top:-1.20em}    
+    	#fun_ban {position: absolute; right:10%; height: 3.5em;  top:-1.20em}
+    	
+/*    히든에서 닉네임이 안겨져와서 임시로 영역밖에 div에 닉네임저장 */
+   #name_temp {position:absolute; left:-90%; overflow-y:auto;}
+   #room_temp {position:absolute; left:-90%; }
+   #grade_temp {position:absolute; left:-90%; }
+   #uuid_temp {position:absolute; left:-90%; } 
+   #data_temp {position:absolute; left:-90%; }
+
+input[type="text"]:focus {
+  outline: none;
+}
+  
+</style>
+<script language="JavaScript" type="text/javascript">
+
+    var broswerInfo = navigator.userAgent.toLowerCase();//브라우저 정보
+    
+
+function set()
+{
+	window.CINDERELLAvar1.callAndroid();
+}
+function setios()
+{
+    window.location = "jscall://callAndroid";
+}
+var flag2 = 0;
+function app1()
+{
+    
+//    if (broswerInfo.indexOf('Android') != -1)
+//	    window.CINDERELLAver1.localback(flag2);
+}
+app1();
+function menuclose()
+{
+	if(flag2%2==0){
+		user();		// 초기화 이후에..				
+		$('.wrap_manu').animate({"left" : "20%"}, 300);
+		$('.wrap_menu').animate({"left" : "0%"}, 0);
+	}else {
+		$('.wrap_manu').animate({"left" : "120%"}, 300);
+		$('.wrap_menu').animate({"left" : "-100%"}, 0);
+	}
+	flag2++;
+	app1(flag2);
+}
+function app2()
+{
+	window.CINDERELLAver1.exitapp();
+}
+function app2ios()
+{
+    window.location = "jscall://exitapp";
+}
+function bye(){
+	//set();
+	$("#test").empty();
+	$('#content').append("<marquee id='mq' direction='left' behavior='scroll' loop='-1' scrolldelay='50' width='100%' style='background:#eee;'>지금은 우리가 헤어져야 할 시간 다음에 또 만나요 지금은 우리가 헤어져야 할 시간 다음에 또 만나요 헤어지는 마음이야 아쉬웁지만 웃으면서 헤어져요 다음에 또 만날 날을 약속하면서 이제 그만 헤어져요 지금은 우리가 헤어져야 할 시간 다음에 또 만나요 지금은 우리가 헤어져야 할 시간 다음에 또 만나요</marquee>");
+	
+	setTimeout(function()
+	{
+		reset();				
+	}, 1000*60);
+}
+var nt = new Date();
+var lh = (23 - nt.getHours())*3600*1000; //3600*1000
+var lm = (59 - nt.getMinutes())*60*1000 ;//60*1000
+if ((nt.getHours()>22)&&(nt.getMinutes()>58)){
+	bye();
+}else{
+	setTimeout(function()
+	{
+		bye();				
+	}, lh+lm);
+}
+
+var usernum = 5;
+var mem = [5];
+var top=0;
+
+$(document).ready(function(){
+    var flag=0;
+    var top=0;
+    var event=0;				// 1 일반, 2 귓속말, 3 커멘드
+    var socket = io.connect();
+    var exit = true;
+	
+    init(); 
+	
+    function init()							// 초기화 요청부분
+    {	
+        var uuid;
+        var url = unescape(location.href);
+        var pm  = url.split('?');
+        var params   = pm[1].split('&');
+        for( var i=0; i<params.length; i++ )
+        {
+            var param = params[i].split('=');
+            _value=param[1];
+            value=param[1];
+        }
+
+        var sp = url.split('/room/');
+        var room = sp[1].substring(0, 3);
+		
+        uuid = value;
+        $('#uuid_temp').html(uuid);
+        socket.emit('init', {uuid:uuid, room:room});
+    }
+	
+    socket.on('init', function(data){		// 초기화 수신부분
+        $('#name_temp').html(data[0]);
+        $('#room_temp').html(data[1]);
+        user();
+    });
+	
+    function user()							// 방그룹 요청부분
+    {
+        var room = $('#room_temp').html();
+        var name = $('#name_temp').html();
+        var uuid = $('#uuid_temp').html();
+        socket.emit('user', {room:room, my:name, uuid:uuid});
+    }		
+    // 방그룹 수신
+    socket.on('user', function(data){
+        var output=''; // menu_user
+        var my = $('#name_temp').html();
+        for (l=0; l<data.length; l++){
+            if (data[l].nick==my){
+                $('#grade_temp').html(data[l].grade);
+            }
+        }
+        var grade = $('#grade_temp').html();
+
+        $('#wrap_menu_user').empty();
+        for(i=0; i<data.length; i++)
+        {
+            mem[i] = data[i].nick;
+            output += '<li class="wrap_li">';
+            output += '<div class="menu_user" style="color:#000">';
+            if (grade == 1 && data[i].nick == my)
+                output += data[i].nick +'(방장)'; //btn-whispers.png <-- 
+            else if(data[i].nick==my)
+                output += data[i].nick +'(나)';
+            else
+                output += data[i].nick;
+            if(data[i].whis>=1 && data[i].whis<=5){
+                if(data[i].nick==my)
+                    output += '<img src="../images/btn-whispers_'+ data[i].whis +'.png" id="fun_wis">';
+                else
+                    output += '<img src="../images/btn-whispers.png" id="fun_wis" onclick="whisper('+ i +')">';
+            }
+            else
+                output += '<img src="../images/btn-whispers_'+ 0 +'.png" id="fun_wis" onclick="whisper('+ i +')">';
+            if(grade == 1){
+                if(data[i].nick!=my)
+                    output += '<img src="../images/btn-out.png" id="fun_ban" onclick="kick('+ i +')">';
+            }
+            output += '</div>';
+            output += '</li>';
+            if(my==data[i].nick)
+                $('#grade_temp').html(data[i].grade);
+        }
+        $(output).appendTo('#wrap_menu_user');
+    });
+    /*
+    //메세지 입력하는 경우 "누구누구가 입력중"
+    $('#input_txt').keyup(function () {
+        socket.broadcast.to(socket.room).emit('comment', { message: socket.nick + '님이 입력 중입니다.' });
+    });
+	*/	
+    // 메세지 전송버튼
+    
+    $('#send_btn').click(function () {
+	        
+        
+		var now = new Date();
+		var Tm = now.getMinutes();
+		
+		if (Tm<10){
+			Tm = "0"+now.getMinutes();
+		}
+		
+		var time = now.getHours()+':';
+		time += Tm+'';
+		
+		var msg = $('#message').val();			// 메세지
+		var sp = msg.split(" ");				// 명령어 분할
+		var my = $('#name_temp').html();		// 주체의 이름
+		var grade = $('#grade_temp').html();	// 자신의 등급
+		var room = $('#room_temp').html();		// 자신의 방번호
+		var uuid = $('#uuid_temp').html();		// 자신의 방번호
+				
+		$('#send_btn').animate({"opacity" : "0.1"}, 100);
+		$('#send_btn').animate({"opacity" : "1"}, 100);
+				
+		if(msg == "")
+			return ;
+			// 귓속말
+		if(sp[0]=='/w')
+		{
+			var m='';
+			for(i=2; i<msg.length; i++)
+			{
+			if(sp[i]==undefined)
+				break;
+				m+=sp[i]+' ';
+			}	
+			socket.emit('whisper', { my: my, you: sp[1], msg: m, date: time, uuid: uuid }, function (error, message) {
+			    location.href = "/re?num=6";
+			});
+		}
+		else if(sp[0]=='/kick')		// 강퇴 전체메시지
+		{
+			if(grade == 1)	// 방장이면
+			{				
+				if(my==sp[1])
+					alert('자신은 강퇴 할 수 없습니다.');
+				else
+					socket.emit('kick', { my:my, you:sp[1], room:room, uuid:uuid});
+			}else if(grade!=1)
+			alert("방장이 아닙니다.")
+		}
+		else	// 일반 메세지
+		{
+            socket.emit('message', { message: $('#message').val(), date: time }, function (error, message) {
+                location.href = "/re?num=6";
+            });
+		}
+		$('#message').val('');	
+	});
+
+	// 채팅방 메세지 수신
+	socket.on('message', function(data){
+		var output='';
+		var my = $('#name_temp').html();
+		var msg = data.message;		
+		var temp='';
+		
+		for (i=0; i<msg.length; i++) 
+		{
+			if(i%19==0 && i!=0)
+				temp+='<br>';
+			temp += msg[i];
+		}
+		if(my==data.nick)	// 자신의 메세지
+		{
+			output += '<li style="position:absolute; right:1em; top:'+ top +'em; list-style-type:none;">';
+			output += '<p id="chat_msg" style="background:#1e88e5; margin-top:1em; color:#fff;">'+ temp +'</p>';
+		}
+		else				// 타인의 메세지
+		{
+			output += '<li style="position:absolute; left:0.8em; top:'+ top +'em; list-style-type:none;">';
+			output += '<p id="chat_nick">'+ data.nick +'</p>';	
+			output += '<p id="chat_msg" style="background:#eee; border-radius:2em 2em 2em 0em;">'+ temp +'</p>';
+		}
+		output += '<p id="chat_date">'+ data.date +'</p>';
+		output += '<br><br><br><br><br><br><br><br>';		// 채팅 	밑 여백
+		output += '</li>';
+		top+=7;			
+		$(output).appendTo('#content');
+		$(".wrap_body").scrollTop($(".wrap_body")[0].scrollHeight+20);
+	});
+			
+	// 채팅방 귓속말 수신
+	socket.on('whisper', function(data){
+		var output='';
+		var my = $('#name_temp').html();
+		var msg = data.message;
+		var temp='';
+		
+		for (i=0; i<msg.length; i++) {
+			if(i%19==0 && i!=0)
+				temp+='<br>';
+			temp += msg[i];
+		}
+		if(my==data.nick)	// 자신의 메세지
+		{
+			output += '<li style="position:absolute; right: 1em; top:'+ top +'em; list-style-type:none;">';
+			output += '<p id="chat_msg" style="background:#fff; margin-top:1em; color:#1e88e5; border-style: dashed; border-width: 1.5px; border-color:#1e88e5;">'+ temp +'</p>';
+		}
+		else				// 타인의 메세지 
+		{
+			output += '<li style="position:absolute; left:0.8em; top:'+ top +'em; list-style-type:none;">';
+			output += '<p id="chat_nick">'+ data.nick +'</p>';	
+			output += '<p id="chat_msg" style="background:#fff; border-radius:2em 2em 2em 0em; color:#ed145b; border-style: dashed; border-width: 1.5px; border-color:#ed145b;">'+ temp +'</p>';
+		}
+		output += '<p id="chat_date">'+ data.date +'</p>';
+		output += '<br><br><br><br><br><br><br><br>';		// 채팅 밑 여백
+		output += '</li>';
+		top+=7;
+		$(output).appendTo('#content');
+		$(".wrap_body").scrollTop($(".wrap_body")[0].scrollHeight+20);
+	});
+			
+	// 채팅방 귓속말 수신
+	socket.on('comment', function(data){
+		var output='';
+		var msg = data.message;
+				
+		$('#ttt').remove();
+		output += '<li id="ttt" style="position:fixed; top:'+ 3 +'em; width:100%; height:2.7em; background:rgba(0,0,0,0.7); list-style-type:none; z-index:1;">';
+		output += '<p style="position:relative; top:-0.4em; text-align:center; font-size:1em; color:#fff;">';
+		output += msg;
+		output += '</p>';
+		output += '</li>';
+		$(output).appendTo('#content');
+		$('#ttt').animate({"opacity" : "0"}, 10000);
+		$(".wrap_body").scrollTop($(".wrap_body")[0].scrollHeight+20);
+	});
+
+
+
+
+	// 강퇴하기
+	socket.on('kick', function(data){
+		var output='';
+		var my = $('#name_temp').html();
+		var uuid = $('#uuid_temp').html();
+				
+		if(my==data.you) // 강퇴당한사람과 내가 동일하다면
+		{
+			var nick = $('#name_temp').html();
+			var room = $('#room_temp').html();
+		
+			location.href="/kick?nick="+nick+"&room="+room;	// 강퇴시키기(로직)
+		}
+	});
+
+	// 메뉴버튼
+	$('#main_btn2').click(function(){
+				
+		$('#main_btn2').animate({"opacity" : "0.1"}, 100);
+		$('#main_btn2').animate({"opacity" : "1"}, 100);
+				
+		if(flag%2==0)
+		{
+			user();		// 초기화 이후에..				
+			$('.wrap_manu').animate({"left" : "20%"}, 300);
+			$('.wrap_menu').animate({"left" : "0%"}, 0);
+	    }
+		else
+		{
+			$('.wrap_manu').animate({"left" : "120%"}, 300);
+			$('.wrap_menu').animate({"left" : "-100%"}, 0);
+		}
+		flag++;
+		flag2=flag;
+		app1();
+	});
+			
+	$('.wrap_menu').click(function(){
+		
+		if(flag%2==0)
+		{
+			user();		// 초기화 이후에..				
+			$('.wrap_manu').animate({"left" : "20%"}, 300);
+			$('.wrap_menu').animate({"left" : "0%"}, 0);
+	    }
+		else 
+		{
+			$('.wrap_manu').animate({"left" : "120%"}, 300);
+			$('.wrap_menu').animate({"left" : "-100%"}, 0);
+		}
+		flag++;
+		flag2=flag;
+		app1();
+	});
+
+	// 종료하기
+	$('#menu_exit_btn').click(function () {
+
+	    socket.emit('user left');
+	    var uuid = $('#uuid_temp').html();
+	    location.href = "/exit?uuid=" + uuid;	// 정상 종료
+		$('#menu_exit_btn').animate({"opacity" : "0.1"}, 100);
+		$('#menu_exit_btn').animate({"opacity" : "1"}, 100);
+		alert("퇴장하셨습니다.");
+		exit = false;	
+		
+	});
+    //비정상적으로 접속이 끊긴 경우, 특히 아이폰에서 화면 잠금으로 넘어가는 경우에 유저에게 접속이 끊김을 알려 줘야 함.
+    //정상 종료가 아닌 경우를 구분하여 처리.
+	socket.on('error', function (err) {
+
+	    if (exit) {
+	        socket.emit('user left2');
+	        var uuid = $('#uuid_temp').html();
+	        location.href = "/exit2?uuid=" + uuid;	// 비정상 종료
+	        alert("접속이 끊겼어요. 다시 접속해 주세요.");	        
+	    }
+	});
+
+});
+
+
+
+function whisper(i)
+{		
+	$('#message').val('/w '+mem[i]+' ');
+	// 메뉴 닫음
+	$('.wrap_manu').animate({"left" : "120%"}, 300);
+	$('.wrap_menu').animate({"left" : "-100%"}, 0);
+	flag++;
+	flag2=flag;
+	app1();
+}
+
+function kick(i)
+{
+	$('#message').val('/kick '+mem[i]+' ');
+	// 메뉴 닫음
+	$('.wrap_manu').animate({"left" : "120%"}, 300);
+	$('.wrap_menu').animate({"left" : "-100%"}, 0);
+	flag++;
+	flag2=flag;
+	app1();
+}
+function reset(){
+	$("#mq").empty();
+	alert("오늘의 무도회장은 여기까지!");
+	
+	var uuid = $('#uuid_temp').html();
+	
+	location.href="/exit?uuid="+uuid;	// 세션초기화-
+
+}
+</script>
+
+</head> 
+<body>
+	<div class="wrap_main">
+		<div class="wrap_head">
+			<div>오늘의 채팅방</div>
+        <img src="../images/main_btn2.png" id="main_btn2">
+		</div>
+	</div>
+	<div class="wrap_body">
+		<div id="content"></div>
+		<div id="name_temp"></div>
+		<div id="room_temp"></div>
+		<div id="uuid_temp"></div>
+		<div id="grade_temp"></div>
+		<div id="data_temp"></div>
+	</div>
+	<div class="wrap_bottom">
+		<div class="bottom_box">
+			<div id="input_txt"><input type="text" id="message" name="msg_name" value="" maxlength="38"></div>
+			<div id="send_btn">전송</div>
+		</div>
+	</div>
+</div>
+	<!-- 메뉴 왼쪽 안보이는 버튼 영역 -->
+<div class="wrap_menu"></div>
+	<!-- 실제 메뉴 영역 -->
+<div class="wrap_manu">
+	<div class="menu_top">
+		<div id="menu_header">
+			<P id="menu_header_text">대화상대</P>
+		</div>
+		<div id="menu_exit">
+			<cneter><img src="../images/btn_out2.png" id="menu_exit_btn"> <!-- 링크바뀜 --></cneter>
+		</div>
+	</div>
+    <div id="menu_line"></div>
+	<ul id="wrap_menu_user"></ul>
+</div>
+
+</body>
+</html>

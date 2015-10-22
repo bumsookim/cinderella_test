@@ -1,0 +1,62 @@
+@charset "utf-8";
+/* reset */
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,textarea,p,blockquote,th,td,input,select,textarea,button {margin:0;padding:0}
+fieldset,img {border:0 none}
+dl,ul,ol,menu,li {list-style:none}
+blockquote, q {quotes: none}
+blockquote:before, blockquote:after,q:before, q:after {content:'';content:none}
+input,select,textarea,button {vertical-align:middle}
+button {border:0 none;background-color:transparent;cursor:pointer}
+body {background:#fff}
+body,th,td,input,select,textarea,button {font-size:12px;line-height:1.5;font-family:'돋움',dotum,sans-serif;color:#333} /* color값은 디자인가이드에 맞게사용 */
+a {color:#333;text-decoration:none}
+a:active, a:hover {text-decoration:underline}
+address,caption,cite,code,dfn,em,var {font-style:normal;font-weight:normal}
+
+
+#d-img-main {position:absolute; width:100%; z-index:-1}
+#d-img-logo {width:100%}
+.img-index-logo {position:absolute; width:500px; top:10%; left:50%; margin-left:-250px;}
+
+/* start but */
+#d-btn-start{position:absolute; width:100%; top:70%;}
+	#bnt-start {height: 6em; border: 2pt solid #FFFFFF; margin:2em;}
+		.p-start {text-align:center; font-size:3em; color:#FFFFFF; font-weight:bold;}
+
+
+/* info but */
+#btn-info {position:absolute; width:100%; top:90%;}
+	.p-info {text-align:center; font-size:2em; color:#FFFFFF;}
+
+
+/* countdown */ 
+.wrapper {
+  height: 100%;
+  width: 100%;
+}
+
+.wrapper { display: table;}
+
+.cell {
+  display: table-cell;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  vertical-align: middle;
+}
+
+#holder {
+  width: 603px;
+  height: 383px;
+  margin: auto;
+}
+
+.cntSeparator { display: none; }
+
+.cntDigit {
+  margin-top: 40% !important;
+}
+
+  .cntDigit#cnt_0 { margin-left: 90px; }
+  .cntDigit#cnt_2 { margin-left: 7px; }
+

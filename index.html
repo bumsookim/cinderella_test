@@ -1,0 +1,381 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width" />
+<title>신데렐라</title>
+<!-- <link href="cinderlla.css" rel="stylesheet" type="text/css"> -->
+<script language="JavaScript" type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script language="JavaScript" type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.js"></script>
+
+<!-- <script src="js/jquery.countdown.js"></script> -->
+<script language="JavaScript" type="text/javascript">
+ function app()
+ {
+	 window.CINDERELLAver1.localpage();
+ }
+ function appios()
+ {
+     window.location = "jscall://localpage";
+ }
+var broswerInfo = navigator.userAgent;
+	if (broswerInfo.indexOf("APP_CINDERELLAver1.1_Android") > -1){
+	    app();
+	} else if (broswerInfo.indexOf("iPhone") > -1) {
+	    appios();
+	}
+var createDigits = function(where, options) {
+	  var counter = 0;
+	  // Iterate each startTime digit, if it is not a digit
+	  // we'll asume that it's a separator
+	  var mFirstPos, sFirstPos;
+	  // reset digits and intervals array.
+	  digits = [];
+	  intervals = [];
+
+	  for (var i = 0; i < options.startTime.length; i++) {
+	    if (parseInt(options.startTime[i]) >= 0) {
+	      elem = $('<div id="cnt_' + counter + '" class="cntDigit" />').css({
+		height: options.digitHeight,
+		float: 'left',
+		background: 'url(\'' + options.image + '\')',
+		width: options.digitWidth
+	      });
+
+	      elem.current = parseInt(options.startTime[i]);
+	      digits.push(elem);
+
+	      margin(counter, -elem.current * options.digitHeight * options.digitImages);
+
+	      if (options.continuous === true) {
+		digits[counter]._max = function() { return 9; };
+	      } else {
+		// Add max digits, for example, first digit of minutes (mm) has
+		// a max of 5. Conditional max is used when the left digit has reach
+		// the max. For example second "hours" digit has a conditional max of 4
+		switch (options.format[i]) {
+		  case 'h':
+		    digits[counter]._max = function(pos, isStart) {
+		      if (pos % 2 == 0)
+			return 2;
+		      else
+			return (isStart) ? 3: 9;
+		    };
+		    break;
+		  case 'd':
+		    digits[counter]._max = function() { return 9; };
+		    break;
+		  case 'm':
+		    digits[counter]._max = function(pos) {
+		      if(!mFirstPos) { mFirstPos = pos; } 
+		      return pos == mFirstPos ? 9 : 5;
+		    };
+		    break;
+		  case 's':
+		    digits[counter]._max = function(pos) {
+		      if(!sFirstPos) { sFirstPos = pos; } 
+		      return pos == sFirstPos ? 9 : 5;
+		    };
+		}
+	      }
+
+	      counter += 1;
+	    } else {
+	      elem = $('<div class="cntSeparator"/>').css({float: 'left'})
+						     .text(options.startTime[i]);
+	    }
+	    where.append(elem)
+	  }
+	};
+
+	var makeMovement = function(elem, steps, isForward, options) {
+	  // Stop any other movement over the same digit.
+	  if (intervals[elem])
+	    window.clearInterval(intervals[elem]);
+
+	  // Move to the initial position (We force that because in chrome
+	  // there are some scenarios where digits lost sync)
+	  var initialPos = -(options.digitHeight * options.digitImages *
+			     digits[elem].current);
+	  margin(elem, initialPos);
+	  digits[elem].current = digits[elem].current + ((isForward) ? steps: -steps);
+
+	  var x = 0;
+	  intervals[elem] = setInterval(function() {
+	    if (x++ === options.digitImages * steps) {
+	      window.clearInterval(intervals[elem]);
+	      delete intervals[elem];
+	      return;
+	    }
+
+	    var diff = isForward ? -options.digitHeight: options.digitHeight;
+	    margin(elem, initialPos + (x * diff));
+	  }, options.stepTime / steps);
+	};
+
+	// Set or get element margin
+	var margin = function(elem, val) {
+	  if (val !== undefined) {
+	    digits[elem].margin = val;
+	    return digits[elem].css({'backgroundPosition': '0 ' + val + 'px'});
+	  }
+
+	  return digits[elem].margin || 0;
+	};
+
+
+	// Makes the movement. This is done by "digitImages" steps.
+	var moveDigit = function(elem, options) {
+	  if (digits[elem].current == 0) {
+	    // Is there still time left?
+	    if (elem > 0) {
+	      var isStart = (digits[elem - 1].current == 0);
+
+	      makeMovement(elem, digits[elem]._max(elem, isStart), true, options);
+	      moveDigit(elem - 1, options);
+	    } else { // That condition means that we reach the end! 00:00.
+	      for (var i = 0; i < digits.length; i++) {
+		clearInterval(intervals[i]);
+		clearInterval(intervals.main);
+		margin(i, 0);
+	      }
+	      options.timerEnd();
+	    }
+	    return;
+	  }
+	  makeMovement(elem, 1, false, options);
+	};
+
+
+
+	// parses a date of the form hh:mm:ss, for example, where
+	// ... precision is the same as the format.
+	var parseRelativeDate = function(form, options) {
+	  // give the date the values of now by default
+	  var now = new Date();
+	  var d = now.getDate();
+	  var m = now.getMonth() + 1;
+	  var y = now.getFullYear();
+	  var h = now.getHours(), mm, s;
+
+	  // read in components and render based on format
+	  var format = options.format;
+	  var parts = form.split(':');
+	  if( format.indexOf('dd') == 0 ) {
+	      d = parts[0];
+	      parts = parts.slice(1);
+	      format = format.substr(3);
+	  }
+	  if( format.indexOf('hh') == 0 ) {
+	      h = parts[0];
+	      parts = parts.slice(1);
+	      format = format.substr(3);
+	  }
+	  if( format.indexOf('mm') == 0 ) {
+	      mm = parts[0];
+	      parts = parts.slice(1);
+	      format = format.substr(3);
+	  }
+	  if( format.indexOf('ss') == 0 ) {
+	      s = parts[0];
+	      parts = parts.slice(1);
+	      format = format.substr(3);
+	  }
+	  // return our constructed date object
+	  return new Date([m, d, y].join('/') + ' ' + [h, mm, s].map(pad).join(':') + ' GMT-0900');
+	};
+
+
+	// convert a date object to the format specified
+	var formatCompute = function(d, options) {
+	      var format = options.format;
+	      var parse = {
+		d: Math.floor( ( d - new Date( d.getFullYear(), 0, 1 ) ) / ( 1000 * 60 * 60 * 24 ) ),
+		h: d.getUTCHours(),
+		m: d.getUTCMinutes(),
+		s: d.getUTCSeconds()
+	      };
+	      return format.replace(/(dd|hh|mm|ss)/g, function($0, form) {
+		      return pad(parse[form[0]]);
+	      });
+	};
+
+	// add leading zeros
+	var pad = function(x){return (1e15+""+x).slice(-2)};
+
+	var digits = [];
+	var intervals = [];
+	jQuery.fn.countdown = function(userOptions) {
+	  // Default options
+	  var options = {
+	    stepTime: 60,
+	    // startTime and format MUST follow the same format.
+	    // also you cannot specify a format unordered (e.g. hh:ss:mm is wrong)
+	    format: "dd:hh:mm:ss",
+	    startTime: "00:00:00:00",
+	    digitImages: 6,
+	    digitWidth: 67,
+	    digitHeight: 90,
+	    timerEnd: function(){},
+	    image: "digits.png",
+	    continuous: false
+	  };
+	  $.extend(options, userOptions);
+
+	  // if an endTime is provided...
+	  if( userOptions.endTime ) {
+	    // calculate the difference between endTime and present time
+	    var endDate = userOptions.endTime instanceof Date ? userOptions.endTime : parseRelativeDate(userOptions.endTime, options);
+	    var diff = endDate.getTime() - (new Date()).getTime();
+	  	// and set that as the startTime
+	    userOptions.startTime = formatCompute(new Date(diff), options);
+	    delete userOptions.endTime;
+	  }
+	  $.extend(options, userOptions);
+	  if (this.length) {
+	    clearInterval(intervals.main);
+	    createDigits(this, options);
+	    intervals.main = setInterval(function(){ moveDigit(digits.length - 1, options); },
+	                                 1000);
+	  }
+	};
+</script>
+
+<script type="text/javascript">
+	//카운트다운 호출
+	$(function() {
+		var now = new Date();
+		if (now.getHours() < 7) {
+			$(".digits").countdown({
+				image : "./img/digits3.png",
+				format : "hh:mm:ss",
+				//다음날 시작하는 시간을 입력하는 곳
+				endTime : new Date('05/15/15 07:00:00'),
+				digitImages : 6,
+				digitWidth : 34,
+				digitHeight : 45,
+				timerEnd : function() {
+					app();
+				}
+			});
+			$('#p-open').text("마차가 무도회장으로 이동 중 입니다.");
+		} else {
+			$(".digits").countdown({
+				image : "./img/digits3.png",
+				format : "hh:mm:ss",
+				//다음날 시작하는 시간을 입력하는 곳
+				endTime : new Date('05/15/15 00:00:00'),
+				digitImages : 6,
+				digitWidth : 34,
+				digitHeight : 45,
+				timerEnd : function() {
+					app();
+				}
+			});
+			$('#p-open').text("신데렐라 무도회장에 오신 여러분을 환영합니다.");
+		}
+	});
+  	function origin(oldid) {
+		id = oldid;
+	}
+	function next()
+	{
+	var nextnow = new Date();
+	var id;
+		if (nextnow.getHours()<6){
+			alert("마차가 아직 도착하지 않았습니다.");
+		}else{
+			if (broswerInfo.indexOf("APP_CINDERELLAver1.1_Android") > -1) {
+			window.CINDERELLAver1.originalid(); //app uuid 메소드 호출
+			window.CINDERELLAver1.loading();
+			} else if (broswerInfo.indexOf("iPhone") > -1) {
+			    window.location = "jscall//originalid";
+			    window.location = "jscall//loading";
+			}
+			location.href="/login?uuid="+id;
+		}
+	}
+</script>
+
+
+
+<!-- index 페이지 경고창 처리부분 -->
+<script type="text/javascript">
+
+var value='';
+
+var url = unescape(location.href);
+var pm  = url.split('?');
+
+var params   = pm[1].split('&');
+for( var i=0; i<params.length; i++ )
+{
+ 	var param = params[i].split('=');
+	// 	alert(param[0]+' 의 값은 '+param[1]+' 입니다.');
+	_value=param[1];
+	value=param[1];
+}
+
+ if(value==1)
+	 alert('방이 가득찼습니다.');
+ else if(value==2)
+	 alert('접속정지입니다. 관리자에게 문의하세요');
+ else if(value==3)
+	 alert('방에서 강퇴 당했습니다.');
+
+</script>
+
+
+</head>
+    
+<style>
+body { margin: 0px; padding: 0px;}
+#d-img-main {position:fixed; width:100%; z-index:-1}
+
+/* logo and open text */
+#d-img-logo {position:absolute; width:100%; top:15%;}
+	.img-logo {position:relative; width:70%; left:50%; margin-left:-35%;}
+ 		.p-open {text-align:center; color:#FFFFFF; font-size:0.9em; font-family:sans-serif; margin-top:5%}
+		
+/* countdown */ 
+#d-clock {position:relative; width:100%; margin-top:1%;}
+.clock {position:inherit; width:230px; left:50%; margin-left:-110px;}
+.cntSeparator {color:#FFFFFF; font-size:1.6em;}
+.cntDigit#cnt_2 {margin-left:5px;}
+.cntDigit#cnt_4 {margin-left:5px;}
+
+/* start but */
+#d-btn-start{position:absolute; width:100%; top:70%;}
+	#bnt-start {background-color:#1e88e5; margin-left:2%; margin-right:2%;}
+		.p-start {text-align:center; font-size:1.5em; color:#FFFFFF; padding:0.4em;}
+
+/* info */
+.p-info {position:relative; text-align:center; font-size:1.1em; color:#FFFFFF; margin-top:top:0.5%;}
+</style>
+    
+</head>
+
+<body>
+<div id="d-img-main"><img src="img/img_index_main.png" width="100%"></div>
+
+<div id="d-img-logo">
+<img src="img/img_index_logo.png" class="img-logo">
+<P class="p-open" id="p-open"></P>
+ <!--countdown-->
+ <div id="d-clock">
+  <div class="clock">
+     <div class="digits"> 
+     </div>
+   </div>
+</div>
+<!--/countdown-->
+</div> 
+
+<div id="d-btn-start">
+ <div id="bnt-start" onClick="next()">
+  <p class="p-start">시작하기</p>
+ </div> 
+</div>
+
+</body>
+</html>

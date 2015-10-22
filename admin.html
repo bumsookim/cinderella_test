@@ -1,0 +1,148 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Insert title here</title>
+
+    <style type="text/css">
+        #btn {
+            background: #eee;
+        }
+
+        #list_t {
+            background: #eee;
+        }
+    </style>
+
+
+    <script type="text/javascript">
+
+        var pw = prompt('관리자 암호를 입력하세요', '');
+        if (pw != 'thatzit')
+            location.href = "/re?num=0";
+
+    </script>
+
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+
+
+        $(document).ready(function () {
+            var socket = io.connect();
+
+            $('#btn').click(function () {
+
+                var data = $('#txt').val();
+                socket.emit('notice', data);
+                $('#txt').val('');
+
+            });
+
+            $('#btn_list').click(function () {
+                socket.emit('list', 'call');
+            });
+				/*
+            for (j = 0; j < 50; j++){
+                $('#wibtn_' + j).click(function () {
+                    var listindex = j;
+                    socket.emit('wireset', {index:listindex});
+                });
+            }
+
+            for (j = 0; j < 50; j++) {
+                $('#kickbtn_' + j).click(function () {
+                    var listindex = j;
+                    socket.emit('kickreset', { index: listindex });
+                });
+            }
+
+            $('allwireset').click(function () {
+                socket.emit('allwireset', 'wiset');
+            });
+
+            $('allkickreset').click(function () {
+                socket.emit('allkickreset', 'kickset');
+            });
+				*/
+            socket.on('list', function (data) {		// 초기화 수신부분
+
+                var output = '';
+
+                $('#list').empty();
+                output += '<table id="list_t" border="1">';
+                output += '<tr>';
+                output += '<td>닉네임</td>';
+                output += '<td>방번호</td>';
+                output += '<td>uuid</td>';
+                output += '<td>s_id</td>';
+                output += '<td>귓속말</td>';
+                output += '<td>방접속시간</td>';
+                output += '<td>강퇴수</td>';
+                output += '<td>귓리셋</td>';
+                output += '<td>킥리셋</td>';
+                output += '</tr>';
+
+                for (i = 0; i < data.nick.length; i++) {
+                    output += '<tr>';
+                    output += '<td>';
+                    output += data.nick[i];
+                    output += '</td>';
+                    output += '<td>';
+                    output += data.room[i];
+                    output += '</td>';
+                    output += '<td>';
+                    output += data.uuid[i];
+                    output += '</td>';
+                    output += '<td>';
+                    output += data.s_id[i];
+                    output += '</td>';
+                    output += '<td>';
+                    output += data.whis[i];
+                    output += '</td>';
+                    output += '<td>';
+                    output += data.date[i];
+                    output += '</td>';
+                    output += '<td>';
+                    output += data.kick[i];
+                    output += '</td>';
+                    output += '<td>';
+                    output += '<input type="button" id ="wibtn" value="귓리셋">';
+                    output += '</td>';
+                    output += '<td>';
+                    output += '<input type="button" id ="kickbtn" value="킥리셋">';
+                    output += '</td>';
+                    output += '</tr>';
+
+                }
+                output += '</table>';
+                $(output).appendTo('#list');
+            });
+
+        });
+
+        
+
+    </script>
+
+
+</head>
+<body>
+    <br><br>
+    <input type="text" id="txt" />
+    <input type="button" id="btn" value="전송">
+    <input type="button" id="btn_list" value="목록">
+    <input type="button" id="allwireset" value="전체귓속말리셋" />
+    <input type="button" id="allkickreset" value="전체 킥 리셋" />
+    <br>
+    <p>현재 리셋 기능 작동 안함!</p>
+    <div id="list"></div>
+
+    퇴장, 강퇴, 비정상종료 시 닉네임 변경값<br/>
+    exit => exit01<br />
+    kick => exit02<br />
+    disconnect uuid 존재시 => exit03<br />
+    disconnect uuid null => exit04<br />
+
+</body>
+</html>
